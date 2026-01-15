@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator | XpertZones</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts to match your site -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="main-layout">
+                <!-- Left Section: Controls -->
+                <div class="controls">
+                    <h2 class="title">QR Code Generator</h2>
+                    
+                    <div class="input-group">
+                        <textarea id="qr-text" placeholder="Your Text Here">Your Text Here</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label>ECC Level</label>
+                            <select id="ecc-level">
+                                <option value="L">L (7%)</option>
+                                <option value="M" selected>M (15%)</option>
+                                <option value="Q">Q (25%)</option>
+                                <option value="H">H (30%)</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>Module Size</label>
+                            <input type="number" id="module-size" value="12">
+                            <small>Tip: Big screen = 10-14</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label>Margin</label>
+                            <input type="number" id="margin" value="4">
+                        </div>
+                        <div class="col">
+                            <label>Background</label>
+                            <select id="bg-type">
+                                <option value="solid">Solid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label>Colors</label>
+                            <div class="color-pickers">
+                                <input type="color" id="dot-color" value="#000000">
+                                <input type="color" id="bg-color" value="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Center Logo (optional)</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="logo-input" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="row slider-row">
+                        <div class="col">
+                            <label>Logo Size (%) <span id="logo-size-val">20%</span></label>
+                            <input type="range" id="logo-size" min="10" max="40" value="20">
+                        </div>
+                        <div class="col">
+                            <label>Logo Padding (%) <span id="logo-padding-val">8%</span></label>
+                            <input type="range" id="logo-padding" min="0" max="20" value="8">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="generate-btn" class="btn btn-blue">Generate</button>
+                        <button id="download-btn" class="btn btn-green">Download SVG</button>
+                        <button id="clear-logo-btn" class="btn btn-red">Clear Logo</button>
+                        <button id="reset-btn" class="btn btn-gray">Reset</button>
+                    </div>
+                    <p id="status-msg">Generated ✓</p>
+                </div>
+
+                <!-- Right Section: Preview -->
+                <div class="preview-area">
+                    <div id="qrcode-container">
+                        <!-- QR Code will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.13/dist/easy.qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
