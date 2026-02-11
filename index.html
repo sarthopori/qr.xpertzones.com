@@ -3,54 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Super QR & Barcode Generator</title>
+<title>Super QR Studio</title>
 
 <link rel="stylesheet" href="style.css">
 
-<!-- QR Library -->
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
-
-<!-- Barcode Library -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 </head>
-<body>
+<body class="dark">
 
-<div class="container">
+<div class="app">
 
-<h1>Super QR & Barcode</h1>
+<header>
+<h1>Super QR Studio</h1>
+<button onclick="toggleTheme()">🌙 / ☀</button>
+</header>
 
-<select id="mode">
-<option value="qr">QR Code</option>
-<option value="barcode">Barcode</option>
+<div class="card">
+
+<input id="data" placeholder="Enter URL / Text / WiFi / vCard">
+
+<label>QR Size (px)</label>
+<input type="range" id="size" min="200" max="1000" value="400">
+
+<label>Dot Color</label>
+<input type="color" id="dotColor" value="#000000">
+
+<label>Background Color</label>
+<input type="color" id="bgColor" value="#ffffff">
+
+<label>QR Style</label>
+<select id="style">
+<option value="rounded">Rounded</option>
+<option value="dots">Dots</option>
+<option value="square">Square</option>
+<option value="classy">Classy</option>
 </select>
 
-<input id="data" placeholder="Enter text / URL / SSID / Name" />
+<label>Logo (optional)</label>
+<input type="file" id="logo">
 
-<select id="qrType">
-<option value="text">Text / URL</option>
-<option value="wifi">WiFi QR</option>
-<option value="vcard">vCard QR</option>
-</select>
+<button onclick="generateQR()">Generate QR</button>
 
-<select id="barcodeType" style="display:none;">
-<option value="CODE128">Code128</option>
-<option value="CODE39">Code39</option>
-<option value="EAN13">EAN13</option>
-<option value="EAN8">EAN8</option>
-<option value="UPC">UPC</option>
-<option value="ITF14">ITF</option>
-</select>
-
-<button onclick="generate()">Generate</button>
-
-<div id="qrBox"></div>
-<svg id="barcode"></svg>
+<div id="qr"></div>
 
 <div class="download">
-<button onclick="downloadPNG()">PNG</button>
-<button onclick="downloadJPG()">JPG</button>
-<button onclick="downloadSVG()">SVG</button>
+<button onclick="download('png')">PNG</button>
+<button onclick="download('jpeg')">JPG</button>
+<button onclick="download('svg')">SVG</button>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Bulk QR (CSV)</h2>
+<input type="file" id="csv">
+<button onclick="bulkGenerate()">Generate All</button>
+<div id="bulkResult"></div>
+
 </div>
 
 </div>
