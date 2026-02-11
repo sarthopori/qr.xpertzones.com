@@ -1,33 +1,84 @@
-/* Styling for frame items to mimic the UI buttons in screenshot */
-.frame-item {
-    min-width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.card {
     background: white;
-    border-radius: 8px;
-    transition: all 0.2s;
+    border-radius: 30px;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+    border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.frame-item:hover {
-    background: #f0f9ff;
+.preview-card {
+    background: white;
+    border-radius: 40px;
+    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1);
+    border: 1px solid #fff;
+}
+
+.section-title {
+    color: #00aeef;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.type-btn {
+    padding: 14px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: 0.2s;
+}
+
+.type-btn.active {
+    background: #00aeef;
+    color: white;
+}
+
+.main-input {
+    width: 100%;
+    border: 3px solid #e2e8f0;
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    outline: none;
+    transition: 0.2s;
+}
+
+.main-input:focus {
     border-color: #00aeef;
+    box-shadow: 0 0 0 5px rgba(0, 174, 239, 0.1);
 }
 
-/* Hide scrollbar for the frame tab */
-#design-section .flex {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-#design-section .flex::-webkit-scrollbar {
-    display: none;
+.design-tab {
+    padding-bottom: 12px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #94a3b8;
+    border-bottom: 3px solid transparent;
 }
 
-/* Color input styling */
-input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
+.design-tab.active {
+    color: #00aeef;
+    border-bottom-color: #00aeef;
 }
-input[type="color"]::-webkit-color-swatch {
-    border: none;
+
+.shape-btn {
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    font-weight: 700;
+}
+
+.shape-btn.active {
+    background: #00aeef;
+    color: white;
+    border-color: #00aeef;
 }
