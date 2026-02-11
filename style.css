@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 body { font-family: 'Inter', sans-serif; }
 .step-num { background: #000; color: #fff; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold; }
-.nav-btn { padding: 10px 20px; border-radius: 12px; font-weight: 500; color: #64748b; transition: 0.2s; }
-.nav-btn.active { background: #eff6ff; color: #2563eb; }
-.main-input { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; }
-.main-input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-.design-tab { padding: 10px 20px; color: #94a3b8; font-weight: 600; border-bottom: 2px solid transparent; }
+.nav-btn { padding: 12px 24px; border-radius: 14px; color: #64748b; font-weight: 500; transition: 0.2s; }
+.nav-btn.active { background: #f1f5f9; color: #2563eb; }
+.main-input { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; background: #fff; }
+.main-input:focus { border-color: #2563eb; }
+.design-tab { padding: 10px 0; margin-right: 25px; color: #94a3b8; font-weight: 600; border-bottom: 2px solid transparent; }
 .design-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
-.shape-btn { padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-weight: 500; }
-.shape-btn.active { background: #000; color: #fff; border-color: #000; }
-#qr-preview canvas { max-width: 100%; height: auto !important; }
+.shape-btn { padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; }
+.shape-btn.active { border-color: #000; background: #000; color: #fff; }
+#qr-container canvas { max-width: 100%; height: auto !important; border-radius: 10px; }
