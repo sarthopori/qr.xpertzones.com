@@ -1,127 +1,72 @@
-let qr;
-let currentType = "website";
+let qr = new QRCodeStyling({
+width: 300,
+height: 300,
+data: "",
+dotsOptions: { color: "#000", type: "rounded" },
+backgroundOptions: { color: "#fff" }
+});
 
-function selectType(type) {
-    currentType = type;
-    const area = document.getElementById("content-area");
-    area.innerHTML = "";
+qr.append(document.getElementById("qrBox"));
 
-    if (type === "website") {
-        area.innerHTML = `<input id="website" placeholder="https://example.com">`;
-    }
+document.getElementById("mode").addEventListener("change", e => {
+document.getElementById("barcodeType").style.display =
+e.target.value === "barcode" ? "block" : "none";
 
-    if (type === "wifi") {
-        area.innerHTML = `
-            <input id="ssid" placeholder="WiFi Name">
-            <input id="password" placeholder="Password">
-            <select id="encryption">
-                <option value="WPA">WPA/WPA2</option>
-                <option value="WEP">WEP</option>
-                <option value="nopass">No Password</option>
-            </select>
-        `;
-    }
+document.getElementById("qrType").style.display =
+e.target.value === "qr" ? "block" : "none";
+});
 
-    if (type === "vcard") {
-        area.innerHTML = `
-            <input id="name" placeholder="Full Name">
-            <input id="phone" placeholder="Phone">
-            <input id="email" placeholder="Email">
-        `;
-    }
+function generate(){
 
-    if (type === "multi") {
-        area.innerHTML = `
-            <input id="link1" placeholder="Link 1">
-            <input id="link2" placeholder="Link 2">
-        `;
-    }
+const mode = document.getElementById("mode").value;
+let data = document.getElementById("data").value;
 
-    if (type === "bulk") {
-        area.innerHTML = `
-            <input type="file" id="csvFile">
-        `;
-    }
+if(!data){
+alert("Please enter data");
+return;
 }
 
-function generateQR() {
-    const size = document.getElementById("qrSize").value;
-    const fg = document.getElementById("fg").value;
-    const bg = document.getElementById("bg").value;
+if(mode === "qr"){
 
-    let text = "";
+const type = document.getElementById("qrType").value;
 
-    if (currentType === "website") {
-        text = document.getElementById("website").value;
-    }
-
-    if (currentType === "wifi") {
-        const ssid = document.getElementById("ssid").value;
-        const pass = document.getElementById("password").value;
-        const enc = document.getElementById("encryption").value;
-        text = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
-    }
-
-    if (currentType === "vcard") {
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const email = document.getElementById("email").value;
-        text = `BEGIN:VCARD
-VERSION:3.0
-FN:${name}
-TEL:${phone}
-EMAIL:${email}
-END:VCARD`;
-    }
-
-    if (currentType === "multi") {
-        const l1 = document.getElementById("link1").value;
-        const l2 = document.getElementById("link2").value;
-        text = `Links:\n${l1}\n${l2}`;
-    }
-
-    document.getElementById("qrPreview").innerHTML = "";
-    qr = new QRCode(document.getElementById("qrPreview"), {
-        text: text,
-        width: parseInt(size),
-        height: parseInt(size),
-        colorDark: fg,
-        colorLight: bg
-    });
+if(type === "wifi"){
+data = "WIFI:T:WPA;S:" + data + ";P:12345678;;";
 }
 
-function downloadQR() {
-    const format = document.getElementById("downloadFormat").value;
-    const img = document.querySelector("#qrPreview img");
-
-    if (!img) return;
-
-    if (format === "png" || format === "jpg") {
-        const link = document.createElement("a");
-        link.href = img.src;
-        link.download = "qr-code." + format;
-        link.click();
-    }
-
-    if (format === "pdf") {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF();
-        pdf.addImage(img.src, "PNG", 10, 10, 100, 100);
-        pdf.save("qr-code.pdf");
-    }
+if(type === "vcard"){
+data = "BEGIN:VCARD\nVERSION:3.0\nFN:" + data + "\nEND:VCARD";
 }
 
-function startScanner() {
-    const scanner = new Html5Qrcode("scanner");
-    scanner.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: 250
-        },
-        qrCodeMessage => {
-            alert("Scanned: " + qrCodeMessage);
-            scanner.stop();
-        }
-    );
+qr.update({ data });
+
+document.getElementById("qrBox").style.display="block";
+document.getElementById("barcode").style.display="none";
+
+}else{
+
+document.getElementById("qrBox").style.display="none";
+document.getElementById("barcode").style.display="block";
+
+JsBarcode("#barcode", data, {
+format: document.getElementById("barcodeType").value,
+width:2,
+height:100,
+displayValue:true
+});
+
+}
+
+}
+
+function downloadPNG(){
+qr.download({ name:"qr", extension:"png" });
+}
+
+function downloadJPG(){
+qr.download({ name:"qr", extension:"jpeg" });
+}
+
+function downloadSVG(){
+qr.download({ name:"qr", extension:"svg" });
 }
