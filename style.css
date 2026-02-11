@@ -1,53 +1,88 @@
-body{
-margin:0;
-font-family:system-ui;
-background:#0f172a;
-color:#fff;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
 }
 
-.topbar{
-display:flex;
-justify-content:space-between;
-padding:15px 20px;
-background:#020617;
+.step-num {
+    background: #000;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: bold;
 }
 
-.layout{
-display:flex;
-min-height:100vh;
+.nav-btn {
+    padding: 12px 24px;
+    border-radius: 18px;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.2s;
 }
 
-.left{
-width:320px;
-padding:20px;
-background:#020617;
+.nav-btn.active {
+    background: #f1f5f9;
+    color: #3b82f6;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
 }
 
-.right{
-flex:1;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
+.main-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    outline: none;
+    transition: all 0.2s;
 }
 
-input,select,button{
-width:100%;
-padding:10px;
-margin:6px 0;
-border:none;
-border-radius:6px;
+.main-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
-button{
-background:#6366f1;
-color:#fff;
-cursor:pointer;
+.design-tab {
+    padding: 0 0 12px 0;
+    margin-right: 24px;
+    color: #94a3b8;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
 }
 
-.hidden{display:none;}
+.design-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
 
-.download button{
-width:32%;
-margin:4px;
+.shape-btn {
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.shape-btn:hover { border-color: #3b82f6; }
+.shape-btn.active { background: #eff6ff; border-color: #3b82f6; color: #3b82f6; }
+
+.secondary-btn {
+    width: 100%;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px;
+    border-radius: 16px;
+    font-weight: 600;
+    color: #475569;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover { background: #f1f5f9; }
+
+#canvas-wrapper canvas, #canvas-wrapper svg {
+    max-width: 100%;
+    height: auto !important;
 }
