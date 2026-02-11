@@ -8,131 +8,108 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-white min-h-screen font-sans">
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- HEADER NAV -->
-        <header class="bg-white rounded-3xl shadow-sm p-2 mb-8 flex items-center justify-between overflow-x-auto border border-gray-100">
-            <div class="flex space-x-1" id="type-selector">
-                <button onclick="setMode('url')" id="nav-url" class="nav-btn active"><i class="fa-solid fa-link mr-2"></i>Website</button>
-                <button onclick="setMode('text')" id="nav-text" class="nav-btn"><i class="fa-solid fa-align-left mr-2"></i>Text</button>
-                <button onclick="setMode('wifi')" id="nav-wifi" class="nav-btn"><i class="fa-solid fa-wifi mr-2"></i>WiFi</button>
-                <button onclick="setMode('vcard')" id="nav-vcard" class="nav-btn"><i class="fa-solid fa-address-card mr-2"></i>vCard</button>
-                <div class="w-[1px] h-8 bg-gray-200 self-center mx-2"></div>
-                <button onclick="setMode('barcode')" id="nav-barcode" class="nav-btn text-indigo-600 font-bold"><i class="fa-solid fa-barcode mr-2"></i>Barcode</button>
-            </div>
-            <div class="hidden md:block pr-6 font-bold text-gray-400">XpertZones</div>
-        </header>
+    <!-- TOP NAV -->
+    <header class="bg-[#0a1128] text-white py-3 px-6 flex justify-between items-center text-lg font-medium">
+        <span>Home</span>
+        <span>Logo Here</span>
+    </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- LEFT: INPUTS -->
-            <div class="lg:col-span-8 space-y-6">
-                <!-- STEP 1: CONTENT -->
-                <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4 mb-6">
-                        <span class="step-num">1</span>
-                        <h2 class="text-xl font-bold text-gray-800">Complete the content</h2>
-                    </div>
-                    
-                    <div id="inputs-container">
-                        <!-- URL -->
-                        <div id="field-url" class="mode-input">
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Website URL</label>
-                            <input type="text" id="input-url" placeholder="https://www.example.com" class="main-input">
-                        </div>
-                        <!-- Barcode Specific Inputs -->
-                        <div id="field-barcode" class="mode-input hidden space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-600 mb-2">Barcode Format</label>
-                                    <select id="bc-format" class="main-input">
-                                        <option value="CODE128">Code 128 (Standard)</option>
-                                        <option value="EAN13">EAN-13 (Retail)</option>
-                                        <option value="UPC">UPC (US Retail)</option>
-                                        <option value="CODE39">Code 39</option>
-                                        <option value="ITF14">ITF-14</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-600 mb-2">Value / Data</label>
-                                    <input type="text" id="input-barcode-val" placeholder="12345678" class="main-input">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- WiFi -->
-                        <div id="field-wifi" class="mode-input hidden grid grid-cols-2 gap-4">
-                            <input type="text" id="wifi-ssid" placeholder="Network Name" class="main-input col-span-2">
-                            <input type="text" id="wifi-pass" placeholder="Password" class="main-input">
-                            <select id="wifi-enc" class="main-input">
-                                <option value="WPA">WPA/WPA2</option>
-                                <option value="nopass">No Password</option>
-                            </select>
-                        </div>
-                    </div>
+    <!-- MAIN TOGGLE -->
+    <div class="grid grid-cols-2 gap-1 bg-[#0a1128] border-t border-gray-700">
+        <button onclick="setMainMode('qr')" id="btn-mode-qr" class="py-4 text-2xl text-[#00aeef] font-bold border-r border-gray-700 hover:bg-slate-800 transition">Generate QR</button>
+        <button onclick="setMainMode('barcode')" id="btn-mode-bc" class="py-4 text-2xl text-white font-bold hover:bg-slate-800 transition">Generate Barcode</button>
+    </div>
 
-                    <!-- THE GENERATE BUTTON -->
-                    <button onclick="generate()" class="mt-8 w-full bg-black text-white py-5 rounded-2xl font-bold text-lg hover:bg-gray-800 transition shadow-xl flex items-center justify-center gap-3">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Now
-                    </button>
+    <!-- SUB TABS -->
+    <div class="grid grid-cols-4 bg-[#0a1128] text-white border-t border-gray-700 text-center">
+        <button onclick="setType('text')" id="tab-text" class="py-3 text-[#00aeef] border-b-2 border-[#00aeef]">Text</button>
+        <button onclick="setType('url')" id="tab-url" class="py-3 border-b-2 border-transparent">Website</button>
+        <button onclick="setType('wifi')" id="tab-wifi" class="py-3 border-b-2 border-transparent">WiFi</button>
+        <button onclick="setType('vcard')" id="tab-vcard" class="py-3 border-b-2 border-transparent">vCard</button>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <!-- LEFT: SETTINGS -->
+        <div class="lg:col-span-7 space-y-10">
+            
+            <!-- SECTION 1: INSERT DATA -->
+            <section>
+                <h2 class="text-[#00aeef] text-3xl font-normal mb-4">Insert text here</h2>
+                <div id="data-inputs">
+                    <input type="text" id="input-main" placeholder="Type here..." class="w-full border-4 border-[#00aeef] p-4 text-xl outline-none">
+                </div>
+            </section>
+
+            <!-- SECTION 2: DESIGN -->
+            <section id="design-section">
+                <h2 class="text-[#00aeef] text-3xl font-normal mb-4">Design your QR</h2>
+                <div class="flex gap-6 mb-6">
+                    <button onclick="openDesignTab('frame')" class="text-xs uppercase font-bold text-blue-800 border-b-2 border-blue-800">Frame</button>
+                    <button onclick="openDesignTab('shape')" class="text-xs uppercase font-bold text-gray-400">Shape</button>
+                    <button onclick="openDesignTab('logo')" class="text-xs uppercase font-bold text-gray-400">Logo</button>
+                    <button onclick="openDesignTab('level')" class="text-xs uppercase font-bold text-gray-400">Level</button>
                 </div>
 
-                <!-- STEP 2: DESIGN -->
-                <div id="design-section" class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4 mb-6">
-                        <span class="step-num">2</span>
-                        <h2 class="text-xl font-bold text-gray-800">Design & Customize</h2>
-                    </div>
+                <div class="border border-gray-200 rounded-xl p-4 flex gap-4 overflow-x-auto bg-gray-50">
+                    <!-- Frame Placeholders based on screenshot -->
+                    <button class="frame-item border-2 border-blue-400 p-2 rounded bg-white"><i class="fa-solid fa-ban text-gray-300"></i></button>
+                    <button class="frame-item p-2"><i class="fa-solid fa-envelope text-2xl text-gray-500"></i></button>
+                    <button class="frame-item p-2"><i class="fa-solid fa-mobile-screen text-2xl text-gray-500"></i></button>
+                    <button class="frame-item p-2"><i class="fa-solid fa-hand-holding text-2xl text-gray-500"></i></button>
+                    <button class="frame-item p-2"><i class="fa-solid fa-mug-hot text-2xl text-gray-500"></i></button>
+                </div>
+            </section>
 
-                    <div id="qr-design-options">
-                        <div class="flex border-b mb-6">
-                            <button onclick="openTab('tab-colors')" class="design-tab active">Colors</button>
-                            <button onclick="openTab('tab-shapes')" class="design-tab">Shapes</button>
-                            <button onclick="openTab('tab-logo')" class="design-tab">Logo</button>
-                        </div>
-                        <div id="tab-colors" class="design-panel grid grid-cols-2 gap-4">
-                            <input type="color" id="qr-color" value="#000000" class="w-full h-12 rounded cursor-pointer">
-                            <input type="color" id="bg-color" value="#ffffff" class="w-full h-12 rounded cursor-pointer">
-                        </div>
-                        <div id="tab-shapes" class="design-panel hidden grid grid-cols-3 gap-3">
-                            <button onclick="setShape('square')" class="shape-btn active">Square</button>
-                            <button onclick="setShape('rounded')" class="shape-btn">Rounded</button>
-                            <button onclick="setShape('dots')" class="shape-btn">Dots</button>
-                        </div>
+            <!-- SECTION 3: COLOR -->
+            <section>
+                <h2 class="text-[#00aeef] text-3xl font-normal mb-4">cOLOR</h2>
+                <div class="grid grid-cols-2 gap-8">
+                    <div>
+                        <input type="color" id="color-qr" value="#000000" class="w-full h-12 border-4 border-[#00aeef] p-1 cursor-pointer">
                     </div>
-
-                    <div id="bc-design-options" class="hidden grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm font-bold text-gray-400">Line Width</label>
-                            <input type="range" id="bc-width" min="1" max="4" value="2" class="w-full">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold text-gray-400">Height</label>
-                            <input type="range" id="bc-height" min="30" max="150" value="100" class="w-full">
-                        </div>
+                    <div>
+                        <input type="color" id="color-bg" value="#ffffff" class="w-full h-12 border-4 border-[#00aeef] p-1 cursor-pointer">
+                        <label class="block text-sm font-bold mt-2 uppercase">bACKGROUND COLOR</label>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- RIGHT: PREVIEW -->
-            <div class="lg:col-span-4">
-                <div class="bg-white rounded-[2rem] p-8 shadow-xl sticky top-8 text-center border border-gray-100">
-                    <div class="flex items-center gap-4 mb-8 justify-center">
-                        <span class="step-num">3</span>
-                        <h2 class="text-xl font-bold">Preview</h2>
-                    </div>
-                    <div id="preview-box" class="flex justify-center mb-8 bg-slate-50 p-6 rounded-3xl min-h-[320px] items-center border border-dashed border-gray-200">
-                        <canvas id="barcode-canvas" class="hidden"></canvas>
-                        <div id="qr-container"></div>
-                    </div>
-                    <div class="flex flex-col gap-3">
-                        <button onclick="download('png')" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:shadow-lg transition">Download PNG</button>
-                        <button onclick="download('svg')" class="w-full bg-slate-100 py-3 rounded-2xl font-semibold text-gray-600">Download SVG (Vector)</button>
+            <!-- ACTION BUTTON -->
+            <button onclick="generate()" id="btn-generate-main" class="w-full bg-[#0a1128] text-[#00aeef] text-3xl py-4 font-normal mt-10 hover:bg-slate-900 transition">
+                Generate QR
+            </button>
+        </div>
+
+        <!-- RIGHT: PREVIEW -->
+        <div class="lg:col-span-5 flex flex-col items-center">
+            <h2 class="text-2xl font-bold mb-4">Preview</h2>
+            <div class="bg-white shadow-2xl rounded-[3rem] p-10 w-full max-w-md border border-gray-100 flex flex-col items-center">
+                
+                <div id="preview-container" class="w-full aspect-square bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden mb-10">
+                    <!-- Generator appends here -->
+                    <canvas id="barcode-canvas" class="hidden"></canvas>
+                </div>
+
+                <div class="w-full space-y-4">
+                    <button onclick="download('png')" class="w-full bg-[#4669b3] text-white font-bold py-4 rounded-xl text-lg hover:bg-blue-800">Download PNG</button>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="download('svg')" class="bg-[#f1f5f9] py-3 rounded-xl font-bold text-gray-600">SVG</button>
+                        <button onclick="download('jpeg')" class="bg-[#f1f5f9] py-3 rounded-xl font-bold text-gray-600">JPG</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
+    <!-- FOOTER -->
+    <footer class="bg-[#0a1128] text-white py-4 text-center text-2xl uppercase mt-20">
+        FOOTER TEXT HERE
+    </footer>
+
+    <!-- Scripts -->
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="script.js"></script>
