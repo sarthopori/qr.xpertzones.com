@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super QR & Barcode Generator | XpertZones</title>
-    <!-- CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,51 +14,54 @@
         <!-- HEADER NAV -->
         <header class="bg-white rounded-3xl shadow-sm p-2 mb-8 flex items-center justify-between overflow-x-auto border border-gray-100">
             <div class="flex space-x-1" id="type-selector">
-                <button data-type="url" class="nav-btn active"><i class="fa-solid fa-link mr-2"></i>Website</button>
-                <button data-type="text" class="nav-btn"><i class="fa-solid fa-align-left mr-2"></i>Text</button>
-                <button data-type="wifi" class="nav-btn"><i class="fa-solid fa-wifi mr-2"></i>WiFi</button>
-                <button data-type="vcard" class="nav-btn"><i class="fa-solid fa-address-card mr-2"></i>vCard</button>
+                <button onclick="setMode('url')" id="nav-url" class="nav-btn active"><i class="fa-solid fa-link mr-2"></i>Website</button>
+                <button onclick="setMode('text')" id="nav-text" class="nav-btn"><i class="fa-solid fa-align-left mr-2"></i>Text</button>
+                <button onclick="setMode('wifi')" id="nav-wifi" class="nav-btn"><i class="fa-solid fa-wifi mr-2"></i>WiFi</button>
+                <button onclick="setMode('vcard')" id="nav-vcard" class="nav-btn"><i class="fa-solid fa-address-card mr-2"></i>vCard</button>
                 <div class="w-[1px] h-8 bg-gray-200 self-center mx-2"></div>
-                <button data-type="barcode" class="nav-btn text-indigo-600 font-bold"><i class="fa-solid fa-barcode mr-2"></i>Barcode</button>
+                <button onclick="setMode('barcode')" id="nav-barcode" class="nav-btn text-indigo-600 font-bold"><i class="fa-solid fa-barcode mr-2"></i>Barcode</button>
             </div>
             <div class="hidden md:block pr-6 font-bold text-gray-400">XpertZones</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- LEFT: INPUTS & CUSTOMIZATION -->
+            <!-- LEFT: INPUTS -->
             <div class="lg:col-span-8 space-y-6">
-                
-                <!-- STEP 1: CONTENT -->
                 <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
                     <div class="flex items-center gap-4 mb-6">
                         <span class="step-num">1</span>
                         <h2 class="text-xl font-bold text-gray-800">Complete the content</h2>
                     </div>
                     
-                    <div id="inputs-container" class="space-y-4">
-                        <!-- URL Input (Default) -->
-                        <div id="input-url" class="input-group">
+                    <div id="inputs-container">
+                        <!-- URL -->
+                        <div id="field-url" class="mode-input">
                             <label class="block text-sm font-semibold text-gray-600 mb-2">Enter your Website</label>
-                            <input type="text" id="data-url" placeholder="https://www.example.com" class="main-input">
+                            <input type="text" id="input-url" placeholder="https://www.example.com" class="main-input" oninput="generate()">
                         </div>
-                        <!-- WiFi Inputs (Hidden by default) -->
-                        <div id="input-wifi" class="input-group hidden grid grid-cols-2 gap-4">
+                        <!-- Text -->
+                        <div id="field-text" class="mode-input hidden">
+                            <label class="block text-sm font-semibold text-gray-600 mb-2">Your Text Content</label>
+                            <textarea id="input-text" placeholder="Type your message here..." class="main-input h-32" oninput="generate()"></textarea>
+                        </div>
+                        <!-- WiFi -->
+                        <div id="field-wifi" class="mode-input hidden grid grid-cols-2 gap-4">
                             <div class="col-span-2">
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Network Name (SSID)</label>
-                                <input type="text" id="wifi-ssid" placeholder="Home WiFi" class="main-input">
+                                <label class="block text-sm font-semibold text-gray-600 mb-2">SSID (Network Name)</label>
+                                <input type="text" id="wifi-ssid" placeholder="Home WiFi" class="main-input" oninput="generate()">
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Password</label>
-                                <input type="text" id="wifi-pass" placeholder="Password" class="main-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Encryption</label>
-                                <select id="wifi-enc" class="main-input">
-                                    <option value="WPA">WPA/WPA2</option>
-                                    <option value="WEP">WEP</option>
-                                    <option value="nopass">None</option>
-                                </select>
-                            </div>
+                            <input type="text" id="wifi-pass" placeholder="Password" class="main-input" oninput="generate()">
+                            <select id="wifi-enc" class="main-input" onchange="generate()">
+                                <option value="WPA">WPA/WPA2</option>
+                                <option value="WEP">WEP</option>
+                                <option value="nopass">No Password</option>
+                            </select>
+                        </div>
+                        <!-- vCard -->
+                        <div id="field-vcard" class="mode-input hidden grid grid-cols-2 gap-4">
+                            <input type="text" id="v-name" placeholder="Full Name" class="main-input" oninput="generate()">
+                            <input type="text" id="v-phone" placeholder="Phone Number" class="main-input" oninput="generate()">
+                            <input type="text" id="v-email" placeholder="Email Address" class="main-input col-span-2" oninput="generate()">
                         </div>
                     </div>
                 </div>
@@ -70,84 +72,58 @@
                         <span class="step-num">2</span>
                         <h2 class="text-xl font-bold text-gray-800">Design your QR</h2>
                     </div>
-
-                    <div class="flex border-b border-gray-100 mb-8 overflow-x-auto">
-                        <button class="design-tab active" data-target="panel-colors">Colors</button>
-                        <button class="design-tab" data-target="panel-shapes">Shapes</button>
-                        <button class="design-tab" data-target="panel-logo">Logo</button>
-                        <button class="design-tab" data-target="panel-frames">Frames</button>
+                    <div class="flex border-b mb-6">
+                        <button onclick="openTab('tab-colors')" class="design-tab active">Colors</button>
+                        <button onclick="openTab('tab-shapes')" class="design-tab">Shapes</button>
+                        <button onclick="openTab('tab-logo')" class="design-tab">Logo</button>
                     </div>
 
-                    <!-- Panel: Colors -->
-                    <div id="panel-colors" class="design-panel grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="tab-colors" class="design-panel grid grid-cols-2 gap-4">
                         <div class="p-4 bg-slate-50 rounded-2xl">
-                            <label class="block text-sm font-bold text-gray-600 mb-3">QR Color</label>
-                            <div class="flex gap-4 items-center">
-                                <input type="color" id="color-qr" value="#000000" class="h-12 w-20 rounded cursor-pointer">
-                                <input type="text" id="color-qr-hex" value="#000000" class="flex-1 bg-white border border-gray-200 rounded-lg p-2 text-sm uppercase">
-                            </div>
+                            <label class="block text-xs font-bold uppercase text-gray-400 mb-2">QR Color</label>
+                            <input type="color" id="qr-color" value="#000000" class="w-full h-10 rounded cursor-pointer" oninput="generate()">
                         </div>
                         <div class="p-4 bg-slate-50 rounded-2xl">
-                            <label class="block text-sm font-bold text-gray-600 mb-3">Background Color</label>
-                            <div class="flex gap-4 items-center">
-                                <input type="color" id="color-bg" value="#ffffff" class="h-12 w-20 rounded cursor-pointer">
-                                <input type="text" id="color-bg-hex" value="#ffffff" class="flex-1 bg-white border border-gray-200 rounded-lg p-2 text-sm uppercase">
-                            </div>
+                            <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Background</label>
+                            <input type="color" id="bg-color" value="#ffffff" class="w-full h-10 rounded cursor-pointer" oninput="generate()">
                         </div>
                     </div>
-
-                    <!-- Panel: Shapes -->
-                    <div id="panel-shapes" class="design-panel hidden grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <button class="shape-btn active" data-shape="square">Square</button>
-                        <button class="shape-btn" data-shape="rounded">Rounded</button>
-                        <button class="shape-btn" data-shape="dots">Dots</button>
-                        <button class="shape-btn" data-shape="extra-rounded">Circle</button>
+                    
+                    <div id="tab-shapes" class="design-panel hidden grid grid-cols-3 gap-3">
+                        <button onclick="setShape('square')" class="shape-btn active">Square</button>
+                        <button onclick="setShape('rounded')" class="shape-btn">Rounded</button>
+                        <button onclick="setShape('extra-rounded')" class="shape-btn">Circle</button>
                     </div>
 
-                    <!-- Panel: Logo -->
-                    <div id="panel-logo" class="design-panel hidden">
-                        <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-blue-400 transition cursor-pointer relative">
-                            <input type="file" id="logo-upload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-500 mb-2"></i>
-                            <p class="text-gray-500 font-medium">Click to upload or drag logo</p>
-                            <p class="text-xs text-gray-400 mt-1">Recommended: Square PNG with transparent background</p>
-                        </div>
+                    <div id="tab-logo" class="design-panel hidden">
+                        <input type="file" id="logo-input" accept="image/*" class="main-input" onchange="uploadLogo(event)">
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT: PREVIEW & DOWNLOAD -->
+            <!-- RIGHT: PREVIEW -->
             <div class="lg:col-span-4">
-                <div class="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-100 sticky top-8">
+                <div class="bg-white rounded-[2rem] p-8 shadow-xl sticky top-8 text-center">
                     <div class="flex items-center gap-4 mb-8 justify-center">
                         <span class="step-num">3</span>
-                        <h2 class="text-xl font-bold text-gray-800 text-center">Download your QR</h2>
+                        <h2 class="text-xl font-bold">Download</h2>
                     </div>
-
-                    <div class="flex justify-center mb-10">
-                        <div id="canvas-wrapper" class="p-6 bg-white rounded-3xl shadow-inner border border-gray-50 min-h-[250px] flex items-center justify-center">
-                            <!-- QR/Barcode renders here -->
-                            <canvas id="barcode-canvas" class="hidden"></canvas>
-                        </div>
+                    <div id="qr-preview" class="flex justify-center mb-8 bg-slate-50 p-6 rounded-3xl min-h-[300px] items-center">
+                        <canvas id="barcode-canvas" class="hidden"></canvas>
+                        <!-- QR styling will append here -->
                     </div>
-
                     <div class="space-y-3">
-                        <button id="btn-download-png" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 flex items-center justify-center gap-2 transition-all">
-                            <i class="fa-solid fa-download"></i> Download PNG
-                        </button>
+                        <button onclick="download('png')" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition">Download PNG</button>
                         <div class="grid grid-cols-2 gap-3">
-                            <button id="btn-download-svg" class="secondary-btn">SVG</button>
-                            <button id="btn-download-jpg" class="secondary-btn">JPG</button>
+                            <button onclick="download('svg')" class="bg-slate-100 py-3 rounded-xl font-semibold">SVG</button>
+                            <button onclick="download('jpeg')" class="bg-slate-100 py-3 rounded-xl font-semibold">JPG</button>
                         </div>
                     </div>
-                    
-                    <p class="mt-6 text-center text-xs text-gray-400">High-quality vector graphics ready for print.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Libraries -->
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="script.js"></script>
