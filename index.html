@@ -3,65 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Super QR Studio</title>
+<title>QR Enterprise Studio</title>
 
 <link rel="stylesheet" href="style.css">
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 </head>
 <body class="dark">
 
-<div class="app">
-
-<header>
-<h1>Super QR Studio</h1>
-<button onclick="toggleTheme()">🌙 / ☀</button>
+<header class="topbar">
+<h2>QR Enterprise Studio</h2>
+<button onclick="toggleTheme()">🌙/☀</button>
 </header>
 
-<div class="card">
+<div class="layout">
 
-<input id="data" placeholder="Enter URL / Text / WiFi / vCard">
+<!-- LEFT PANEL -->
+<div class="left">
 
-<label>QR Size (px)</label>
-<input type="range" id="size" min="200" max="1000" value="400">
+<select id="mode">
+<option value="text">Text / URL QR</option>
+<option value="wifi">WiFi QR</option>
+<option value="vcard">vCard QR</option>
+<option value="barcode">Barcode</option>
+</select>
+
+<div id="textBox">
+<input id="textData" placeholder="Enter URL or Text">
+</div>
+
+<div id="wifiBox" class="hidden">
+<input id="ssid" placeholder="WiFi Name">
+<input id="pass" placeholder="Password">
+</div>
+
+<div id="vcardBox" class="hidden">
+<input id="name" placeholder="Full Name">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="org" placeholder="Company">
+</div>
+
+<select id="barcodeType" class="hidden">
+<option value="CODE128">Code128</option>
+<option value="EAN13">EAN13</option>
+<option value="EAN8">EAN8</option>
+<option value="UPC">UPC</option>
+<option value="ITF14">ITF</option>
+</select>
+
+<label>QR Size</label>
+<input type="range" id="size" min="200" max="800" value="400">
 
 <label>Dot Color</label>
 <input type="color" id="dotColor" value="#000000">
 
-<label>Background Color</label>
+<label>Background</label>
 <input type="color" id="bgColor" value="#ffffff">
 
-<label>QR Style</label>
-<select id="style">
+<label>Shape</label>
+<select id="shape">
 <option value="rounded">Rounded</option>
 <option value="dots">Dots</option>
 <option value="square">Square</option>
 <option value="classy">Classy</option>
 </select>
 
-<label>Logo (optional)</label>
+<label>Logo</label>
 <input type="file" id="logo">
 
-<button onclick="generateQR()">Generate QR</button>
+<button onclick="generate()">Generate</button>
 
-<div id="qr"></div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right">
+
+<div id="preview"></div>
+<svg id="barcode"></svg>
 
 <div class="download">
 <button onclick="download('png')">PNG</button>
 <button onclick="download('jpeg')">JPG</button>
 <button onclick="download('svg')">SVG</button>
 </div>
-
-</div>
-
-<div class="card">
-
-<h2>Bulk QR (CSV)</h2>
-<input type="file" id="csv">
-<button onclick="bulkGenerate()">Generate All</button>
-<div id="bulkResult"></div>
 
 </div>
 
