@@ -1,73 +1,133 @@
-let qr = new QRCodeStyling({
-width:400,
-height:400,
-data:"",
-dotsOptions:{color:"#000",type:"rounded"},
-backgroundOptions:{color:"#fff"}
-});
+let currentType = 'url';
+let qrCode;
 
-qr.append(document.getElementById("preview"));
+// Initial Configuration
+const qrConfig = {
+    width: 300,
+    height: 300,
+    type: "svg",
+    data: "https://xpertzones.com",
+    image: "",
+    dotsOptions: { color: "#000000", type: "rounded" },
+    backgroundOptions: { color: "#ffffff" },
+    imageOptions: { crossOrigin: "anonymous", margin: 5 },
+    cornersSquareOptions: { type: "extra-rounded", color: "#000000" },
+    cornersDotOptions: { type: "dot", color: "#000000" }
+};
 
-document.getElementById("mode").addEventListener("change", e=>{
-let m=e.target.value;
-document.getElementById("textBox").classList.toggle("hidden",m!=="text");
-document.getElementById("wifiBox").classList.toggle("hidden",m!=="wifi");
-document.getElementById("vcardBox").classList.toggle("hidden",m!=="vcard");
-document.getElementById("barcodeType").classList.toggle("hidden",m!=="barcode");
-});
+window.onload = () => {
+    qrCode = new QRCodeStyling(qrConfig);
+    qrCode.append(document.getElementById("canvas-wrapper"));
+    initEvents();
+};
 
-function generate(){
+function initEvents() {
+    // Nav Tab Switching
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentType = btn.dataset.type;
+            toggleInputs();
+            updateContent();
+        });
+    });
 
-let mode=document.getElementById("mode").value;
-let data="";
+    // Content Inputs
+    document.getElementById('data-url').addEventListener('input', updateContent);
+    document.getElementById('wifi-ssid').addEventListener('input', updateContent);
+    document.getElementById('wifi-pass').addEventListener('input', updateContent);
+    document.getElementById('wifi-enc').addEventListener('change', updateContent);
 
-if(mode==="text"){
-data=document.getElementById("textData").value;
+    // Design Panel Switching
+    document.querySelectorAll('.design-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.design-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.design-panel').forEach(p => p.classList.add('hidden'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.target).classList.remove('hidden');
+        });
+    });
+
+    // Color Pickers
+    document.getElementById('color-qr').addEventListener('input', (e) => {
+        const val = e.target.value;
+        document.getElementById('color-qr-hex').value = val;
+        qrCode.update({ dotsOptions: { color: val }, cornersSquareOptions: { color: val }, cornersDotOptions: { color: val } });
+    });
+
+    // Shape Switching
+    document.querySelectorAll('.shape-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            qrCode.update({ dotsOptions: { type: btn.dataset.shape } });
+        });
+    });
+
+    // Logo Upload
+    document.getElementById('logo-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => qrCode.update({ image: event.target.result });
+        reader.readAsDataURL(file);
+    });
+
+    // Download Actions
+    document.getElementById('btn-download-png').addEventListener('click', () => download('png'));
+    document.getElementById('btn-download-svg').addEventListener('click', () => download('svg'));
+    document.getElementById('btn-download-jpg').addEventListener('click', () => download('jpeg'));
 }
 
-if(mode==="wifi"){
-data=`WIFI:T:WPA;S:${ssid.value};P:${pass.value};;`;
+function toggleInputs() {
+    const panels = ['input-url', 'input-wifi'];
+    panels.forEach(p => document.getElementById(p).classList.add('hidden'));
+    
+    if (currentType === 'wifi') document.getElementById('input-wifi').classList.remove('hidden');
+    else if (currentType === 'barcode') document.getElementById('design-section').classList.add('hidden');
+    else {
+        document.getElementById('input-url').classList.remove('hidden');
+        document.getElementById('design-section').classList.remove('hidden');
+    }
 }
 
-if(mode==="vcard"){
-data=`BEGIN:VCARD
-VERSION:3.0
-FN:${name.value}
-TEL:${phone.value}
-EMAIL:${email.value}
-ORG:${org.value}
-END:VCARD`;
+function updateContent() {
+    let finalData = "";
+    const barcodeCanvas = document.getElementById('barcode-canvas');
+    const qrSvg = document.querySelector('#canvas-wrapper svg');
+
+    if (currentType === 'url') {
+        finalData = document.getElementById('data-url').value || "https://xpertzones.com";
+    } else if (currentType === 'wifi') {
+        const ssid = document.getElementById('wifi-ssid').value;
+        const pass = document.getElementById('wifi-pass').value;
+        const enc = document.getElementById('wifi-enc').value;
+        finalData = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+    } else if (currentType === 'barcode') {
+        qrSvg?.classList.add('hidden');
+        barcodeCanvas.classList.remove('hidden');
+        JsBarcode("#barcode-canvas", document.getElementById('data-url').value || "12345678", {
+            format: "CODE128",
+            width: 2,
+            height: 100,
+            displayValue: true
+        });
+        return;
+    }
+
+    barcodeCanvas.classList.add('hidden');
+    qrSvg?.classList.remove('hidden');
+    qrCode.update({ data: finalData });
 }
 
-if(mode==="barcode"){
-document.getElementById("preview").style.display="none";
-document.getElementById("barcode").style.display="block";
-JsBarcode("#barcode",document.getElementById("textData").value,{
-format:barcodeType.value
-});
-return;
-}
-
-document.getElementById("preview").style.display="block";
-document.getElementById("barcode").style.display="none";
-
-let logoFile=document.getElementById("logo").files[0];
-let logoURL=logoFile?URL.createObjectURL(logoFile):"";
-
-qr.update({
-data:data,
-width:Number(size.value),
-height:Number(size.value),
-image:logoURL,
-dotsOptions:{color:dotColor.value,type:shape.value},
-backgroundOptions:{color:bgColor.value}
-});
-}
-
-function download(type){
-qr.download({name:"qr",extension:type});
-}
-
-function toggleTheme(){
-document.body.classList.toggle("light");
+function download(ext) {
+    if (currentType === 'barcode') {
+        const canvas = document.getElementById("barcode-canvas");
+        const link = document.createElement('a');
+        link.download = `barcode-xpertzones.${ext}`;
+        link.href = canvas.toDataURL(`image/${ext}`);
+        link.click();
+    } else {
+        qrCode.download({ name: "qr-xpertzones", extension: ext });
+    }
 }
