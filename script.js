@@ -1,81 +1,81 @@
-let qrcode;
-let logoData = null;
+let qr;
+let currentType = "qr";
 
-const qrContainer = document.getElementById("qrcode-container");
+document.getElementById("codeType").addEventListener("change", function () {
+    currentType = this.value;
 
-function generateQR() {
-    qrContainer.innerHTML = ""; // Clear existing
-
-    const text = document.getElementById("qr-text").value;
-    const ecc = document.getElementById("ecc-level").value;
-    const size = parseInt(document.getElementById("module-size").value) * 20; // Scale factor
-    const margin = parseInt(document.getElementById("margin").value);
-    const dotColor = document.getElementById("dot-color").value;
-    const bgColor = document.getElementById("bg-color").value;
-    const logoSize = document.getElementById("logo-size").value / 100;
-    const logoPadding = document.getElementById("logo-padding").value / 100;
-
-    const options = {
-        text: text || "https://xpertzones.com",
-        width: size,
-        height: size,
-        colorDark: dotColor,
-        colorLight: bgColor,
-        correctLevel: QRCode.CorrectLevel[ecc],
-        quietZone: margin * 10,
-        logo: logoData,
-        logoWidth: size * logoSize,
-        logoHeight: size * logoSize,
-        logoBackgroundTransparent: true,
-        PO_TL: dotColor, // Position pattern colors
-        PO_TR: dotColor,
-        PO_BL: dotColor
-    };
-
-    qrcode = new QRCode(qrContainer, options);
-    document.getElementById("status-msg").style.opacity = 1;
-}
-
-// Handle Logo Upload
-document.getElementById('logo-input').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            logoData = event.target.result;
-            generateQR();
-        };
-        reader.readAsDataURL(file);
+    if (currentType === "barcode") {
+        document.getElementById("barcodeOptions").style.display = "block";
+        document.getElementById("qrcode").style.display = "none";
+        document.getElementById("barcode").style.display = "block";
+    } else {
+        document.getElementById("barcodeOptions").style.display = "none";
+        document.getElementById("qrcode").style.display = "block";
+        document.getElementById("barcode").style.display = "none";
     }
 });
 
-// Controls
-document.getElementById("generate-btn").onclick = generateQR;
-document.getElementById("clear-logo-btn").onclick = () => {
-    logoData = null;
-    document.getElementById('logo-input').value = "";
-    generateQR();
-};
+function generateCode() {
+    let text = document.getElementById("textInput").value;
+    let fgColor = document.getElementById("fgColor").value;
+    let bgColor = document.getElementById("bgColor").value;
 
-document.getElementById("reset-btn").onclick = () => location.reload();
-
-document.getElementById("download-btn").onclick = () => {
-    const canvas = qrContainer.querySelector('canvas');
-    if (canvas) {
-        const link = document.createElement('a');
-        link.download = 'xpertzones-qr.png';
-        link.href = canvas.toDataURL();
-        link.click();
+    if (!text) {
+        alert("Please enter text");
+        return;
     }
-};
 
-// Update labels for sliders
-document.getElementById("logo-size").oninput = (e) => {
-    document.getElementById("logo-size-val").innerText = e.target.value + "%";
-};
-document.getElementById("logo-padding").oninput = (e) => {
-    document.getElementById("logo-padding-val").innerText = e.target.value + "%";
-};
+    if (currentType === "qr") {
+        document.getElementById("qrcode").innerHTML = "";
+        qr = new QRCode(document.getElementById("qrcode"), {
+            text: text,
+            width: 250,
+            height: 250,
+            colorDark: fgColor,
+            colorLight: bgColor
+        });
+    } else {
+        let format = document.getElementById("barcodeFormat").value;
+        JsBarcode("#barcode", text, {
+            format: format,
+            lineColor: fgColor,
+            background: bgColor,
+            width: 2,
+            height: 100,
+            displayValue: true
+        });
+    }
+}
 
-// Initial Generate
-window.onload = generateQR;
+function downloadCode() {
+    if (currentType === "qr") {
+        let img = document.querySelector("#qrcode img");
+        if (!img) return;
+
+        let link = document.createElement("a");
+        link.href = img.src;
+        link.download = "qr-code.png";
+        link.click();
+    } else {
+        let svg = document.getElementById("barcode");
+        let serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svg);
+
+        let image = new Image();
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d");
+
+        image.onload = function () {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
+
+            let link = document.createElement("a");
+            link.download = "barcode.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        };
+
+        image.src = "data:image/svg+xml;base64," + btoa(source);
+    }
+}
