@@ -4,7 +4,7 @@ let qrShape = 'square';
 let qrCode;
 let logoData = "";
 
-// Init QR Styling
+// Initialize QR Code Styling
 qrCode = new QRCodeStyling({
     width: 300,
     height: 300,
@@ -19,11 +19,12 @@ window.onload = () => {
     generate();
 };
 
+// Switch between QR and Barcode modes
 function setMainMode(mode) {
     currentMode = mode;
     const qrBtn = document.getElementById('btn-mode-qr');
     const bcBtn = document.getElementById('btn-mode-bc');
-    
+
     if (mode === 'qr') {
         qrBtn.className = "py-5 text-xl font-bold text-[#00aeef] border-b-4 border-[#00aeef]";
         bcBtn.className = "py-5 text-xl font-bold text-gray-400 hover:text-white transition";
@@ -36,16 +37,17 @@ function setMainMode(mode) {
     generate();
 }
 
+// Select content type (Text, URL, WiFi, vCard)
 function setType(type) {
     activeType = type;
     document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(`tab-${type}`).classList.add('active');
-    
-    // Toggle fields
+
     document.getElementById('wifi-fields').style.display = (type === 'wifi') ? 'grid' : 'none';
     generate();
 }
 
+// Generate QR or Barcode
 function generate() {
     const data = document.getElementById('input-main').value || "XpertZones";
     const qrCanvas = document.querySelector('#canvas-wrapper canvas:not(#barcode-canvas)');
@@ -53,7 +55,7 @@ function generate() {
 
     if (currentMode === 'qr') {
         bcCanvas.classList.add('hidden');
-        if(qrCanvas) qrCanvas.classList.remove('hidden');
+        if (qrCanvas) qrCanvas.classList.remove('hidden');
 
         let content = data;
         if(activeType === 'wifi') {
@@ -68,10 +70,11 @@ function generate() {
             backgroundOptions: { color: document.getElementById('color-bg').value },
             image: logoData
         });
+
     } else {
         bcCanvas.classList.remove('hidden');
-        if(qrCanvas) qrCanvas.classList.add('hidden');
-        
+        if (qrCanvas) qrCanvas.classList.add('hidden');
+
         JsBarcode("#barcode-canvas", data, {
             format: "CODE128",
             lineColor: document.getElementById('color-qr').value,
@@ -83,27 +86,33 @@ function generate() {
     }
 }
 
-// UI Helpers
-function openDesignTab(id) {
+// Switch design tab
+function openDesignTab(event, id) {
     document.querySelectorAll('.design-panel').forEach(p => p.classList.add('hidden'));
     document.querySelectorAll('.design-tab').forEach(t => t.classList.remove('active'));
     document.getElementById(id).classList.remove('hidden');
     event.currentTarget.classList.add('active');
 }
 
-function setShape(s) {
-    qrShape = s;
+// Set QR Shape
+function setShape(event, shape) {
+    qrShape = shape;
     document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
     event.currentTarget.classList.add('active');
     generate();
 }
 
+// Upload Logo
 document.getElementById('logo-input').onchange = (e) => {
     const reader = new FileReader();
-    reader.onload = (f) => { logoData = f.target.result; generate(); };
+    reader.onload = (f) => { 
+        logoData = f.target.result; 
+        generate(); 
+    };
     reader.readAsDataURL(e.target.files[0]);
 };
 
+// Download QR/Barcode
 function download(ext) {
     if (currentMode === 'qr') {
         qrCode.download({ name: "xpertzones-qr", extension: ext });
@@ -114,3 +123,21 @@ function download(ext) {
         link.click();
     }
 }
+
+// Sync color picker and text input
+document.getElementById('color-qr').addEventListener('input', e => {
+    document.getElementById('color-qr-hex').value = e.target.value;
+    generate();
+});
+document.getElementById('color-bg').addEventListener('input', e => {
+    document.getElementById('color-bg-hex').value = e.target.value;
+    generate();
+});
+document.getElementById('color-qr-hex').addEventListener('input', e => {
+    document.getElementById('color-qr').value = e.target.value;
+    generate();
+});
+document.getElementById('color-bg-hex').addEventListener('input', e => {
+    document.getElementById('color-bg').value = e.target.value;
+    generate();
+});
