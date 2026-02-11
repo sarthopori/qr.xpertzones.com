@@ -2,81 +2,72 @@ let qr = new QRCodeStyling({
 width:400,
 height:400,
 data:"",
-image:"",
-dotsOptions:{ color:"#000", type:"rounded" },
-backgroundOptions:{ color:"#fff" }
+dotsOptions:{color:"#000",type:"rounded"},
+backgroundOptions:{color:"#fff"}
 });
 
-qr.append(document.getElementById("qr"));
+qr.append(document.getElementById("preview"));
 
-function generateQR(){
+document.getElementById("mode").addEventListener("change", e=>{
+let m=e.target.value;
+document.getElementById("textBox").classList.toggle("hidden",m!=="text");
+document.getElementById("wifiBox").classList.toggle("hidden",m!=="wifi");
+document.getElementById("vcardBox").classList.toggle("hidden",m!=="vcard");
+document.getElementById("barcodeType").classList.toggle("hidden",m!=="barcode");
+});
 
-let data = document.getElementById("data").value;
-if(!data) return alert("Enter data");
+function generate(){
 
-let size = document.getElementById("size").value;
-let dotColor = document.getElementById("dotColor").value;
-let bgColor = document.getElementById("bgColor").value;
-let style = document.getElementById("style").value;
+let mode=document.getElementById("mode").value;
+let data="";
 
-let logoFile = document.getElementById("logo").files[0];
-let logoURL = "";
-
-if(logoFile){
-logoURL = URL.createObjectURL(logoFile);
+if(mode==="text"){
+data=document.getElementById("textData").value;
 }
+
+if(mode==="wifi"){
+data=`WIFI:T:WPA;S:${ssid.value};P:${pass.value};;`;
+}
+
+if(mode==="vcard"){
+data=`BEGIN:VCARD
+VERSION:3.0
+FN:${name.value}
+TEL:${phone.value}
+EMAIL:${email.value}
+ORG:${org.value}
+END:VCARD`;
+}
+
+if(mode==="barcode"){
+document.getElementById("preview").style.display="none";
+document.getElementById("barcode").style.display="block";
+JsBarcode("#barcode",document.getElementById("textData").value,{
+format:barcodeType.value
+});
+return;
+}
+
+document.getElementById("preview").style.display="block";
+document.getElementById("barcode").style.display="none";
+
+let logoFile=document.getElementById("logo").files[0];
+let logoURL=logoFile?URL.createObjectURL(logoFile):"";
 
 qr.update({
 data:data,
-width:Number(size),
-height:Number(size),
+width:Number(size.value),
+height:Number(size.value),
 image:logoURL,
-dotsOptions:{ color:dotColor, type:style },
-backgroundOptions:{ color:bgColor }
+dotsOptions:{color:dotColor.value,type:shape.value},
+backgroundOptions:{color:bgColor.value}
 });
-
 }
 
 function download(type){
-qr.download({ name:"qr", extension:type });
+qr.download({name:"qr",extension:type});
 }
 
 function toggleTheme(){
-document.body.classList.toggle("dark");
 document.body.classList.toggle("light");
-}
-
-/* BULK CSV QR */
-
-function bulkGenerate(){
-
-let file = document.getElementById("csv").files[0];
-if(!file) return alert("Upload CSV");
-
-Papa.parse(file,{
-complete:function(res){
-
-let container = document.getElementById("bulkResult");
-container.innerHTML="";
-
-res.data.forEach((row,i)=>{
-
-if(!row[0]) return;
-
-let div = document.createElement("div");
-div.style.margin="10px";
-
-let q = new QRCodeStyling({
-width:150,
-height:150,
-data:row[0]
-});
-
-q.append(div);
-container.appendChild(div);
-
-});
-
-}
-});
 }
