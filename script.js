@@ -1,113 +1,120 @@
-let currentMode = 'qr';
-let activeType = 'text';
-let qrShape = 'square';
-let qrCode;
-let logoData = "";
+// Initialize Lucide Icons
+lucide.createIcons();
 
-// Initialize QR Code Styling
-qrCode = new QRCodeStyling({
-    width: 300, height: 300, type: "canvas",
-    dotsOptions: { color: "#000000", type: "square" },
+// State Management
+let currentView = 'home';
+let qrCode = null;
+
+// QR Code Configuration
+const qrOptions = {
+    width: 280,
+    height: 280,
+    type: "svg",
+    data: "https://www.xpertzones.com",
+    image: "", // You can add logo URL here
+    dotsOptions: { color: "#111927", type: "square" },
     backgroundOptions: { color: "#ffffff" },
-    imageOptions: { crossOrigin: "anonymous", margin: 10 }
-});
-
-window.onload = () => {
-    qrCode.append(document.getElementById("canvas-wrapper"));
-    generate();
+    imageOptions: { crossOrigin: "anonymous", margin: 5 }
 };
 
-function setMainMode(mode) {
-    currentMode = mode;
-    const qrBtn = document.getElementById('btn-mode-qr');
-    const bcBtn = document.getElementById('btn-mode-bc');
-    if(mode==='qr'){ qrBtn.className="py-5 text-xl font-bold text-[#00aeef] border-b-4 border-[#00aeef]";
-                     bcBtn.className="py-5 text-xl font-bold text-gray-400 hover:text-white transition";
-                     document.getElementById('design-card').style.display="block"; }
-    else { bcBtn.className="py-5 text-xl font-bold text-[#00aeef] border-b-4 border-[#00aeef]";
-           qrBtn.className="py-5 text-xl font-bold text-gray-400 hover:text-white transition";
-           document.getElementById('design-card').style.display="none"; }
-    generate();
+// View Switcher
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(`view-${viewId}`).classList.add('active');
+    
+    if(viewId === 'qr') initQR();
+    if(viewId === 'barcode') generateBarcode();
 }
 
-function setType(type){
-    activeType = type;
-    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`tab-${type}`).classList.add('active');
-    document.getElementById('wifi-fields').style.display=(type==='wifi')?'grid':'none';
-    generate();
+// QR Logic
+function initQR() {
+    if (!qrCode) {
+        qrCode = new QRCodeStyling(qrOptions);
+        qrCode.append(document.getElementById("qr-canvas-container"));
+    }
+    updateQR();
 }
 
-function openDesignTab(event,id){
-    document.querySelectorAll('.design-panel').forEach(p=>p.classList.add('hidden'));
-    document.querySelectorAll('.design-tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(id).classList.remove('hidden');
-    event.currentTarget.classList.add('active');
+function updateQR() {
+    const text = document.getElementById('qr-input').value || "XpertZones";
+    qrOptions.data = text;
+    qrOptions.dotsOptions.color = document.getElementById('qr-color').value;
+    qrOptions.backgroundOptions.color = document.getElementById('qr-bg-color').value;
+    qrOptions.dotsOptions.type = document.getElementById('qr-dots-style').value;
+    
+    qrCode.update(qrOptions);
 }
 
-function setShape(event,shape){
-    qrShape=shape;
-    document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    generate();
+function downloadQR(ext) {
+    const fileName = `qr-${Date.now()}`;
+    qrCode.download({ name: fileName, extension: ext });
 }
 
-document.getElementById('logo-input').onchange = (e)=>{
-    const reader = new FileReader();
-    reader.onload=(f)=>{ logoData=f.target.result; generate(); };
-    reader.readAsDataURL(e.target.files[0]);
-}
+// Barcode Logic
+function generateBarcode() {
+    const text = document.getElementById('barcode-input').value || "1234567890";
+    const type = document.getElementById('barcode-type').value;
+    const color = document.getElementById('barcode-color').value;
+    const width = document.getElementById('barcode-width').value;
 
-document.getElementById('color-qr').addEventListener('input',e=>{document.getElementById('color-qr-hex').value=e.target.value; generate();});
-document.getElementById('color-bg').addEventListener('input',e=>{document.getElementById('color-bg-hex').value=e.target.value; generate();});
-document.getElementById('color-qr-hex').addEventListener('input',e=>{document.getElementById('color-qr').value=e.target.value; generate();});
-document.getElementById('color-bg-hex').addEventListener('input',e=>{document.getElementById('color-bg').value=e.target.value; generate();});
-
-function generate(){
-    const data=document.getElementById('input-main').value||"XpertZones";
-    const qrCanvas=document.querySelector('#canvas-wrapper canvas:not(#barcode-canvas)');
-    const bcCanvas=document.getElementById('barcode-canvas');
-    if(currentMode==='qr' && qrCanvas) qrCanvas.classList.add('updating');
-    if(currentMode==='barcode' && bcCanvas) bcCanvas.classList.add('updating');
-
-    setTimeout(()=>{
-        if(currentMode==='qr'){
-            bcCanvas.classList.add('hidden');
-            if(qrCanvas) qrCanvas.classList.remove('hidden');
-            let content=data;
-            if(activeType==='wifi'){
-                const pass=document.getElementById('wifi-pass').value;
-                const enc=document.getElementById('wifi-enc').value;
-                content=`WIFI:S:${data};T:${enc};P:${pass};;`;
-            }
-            qrCode.update({
-                data:content,
-                dotsOptions:{color:document.getElementById('color-qr').value,type:qrShape},
-                backgroundOptions:{color:document.getElementById('color-bg').value},
-                image:logoData
-            });
-        }else{
-            bcCanvas.classList.remove('hidden');
-            if(qrCanvas) qrCanvas.classList.add('hidden');
-            JsBarcode("#barcode-canvas",data,{
-                format:"CODE128",
-                lineColor:document.getElementById('color-qr').value,
-                background:document.getElementById('color-bg').value,
-                width:2,height:100,displayValue:true
-            });
-        }
-        if(currentMode==='qr' && qrCanvas) qrCanvas.classList.remove('updating');
-        if(currentMode==='barcode' && bcCanvas) bcCanvas.classList.remove('updating');
-    },150);
-}
-
-function download(ext){
-    if(currentMode==='qr'){
-        qrCode.download({name:"xpertzones-qr",extension:ext});
-    }else{
-        const link=document.createElement('a');
-        link.download=`barcode.${ext}`;
-        link.href=document.getElementById("barcode-canvas").toDataURL();
-        link.click();
+    try {
+        JsBarcode("#barcode-canvas", text, {
+            format: type,
+            lineColor: color,
+            width: parseInt(width),
+            height: 100,
+            displayValue: true
+        });
+    } catch (e) {
+        console.error("Barcode generation failed", e);
     }
 }
+
+function downloadBarcode() {
+    const svg = document.getElementById('barcode-canvas');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const svgSize = svg.getBoundingClientRect();
+    canvas.width = svgSize.width * 2;
+    canvas.height = svgSize.height * 2;
+    const ctx = canvas.getContext("2d");
+    const img = document.createElement("img");
+    img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const pngUrl = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        downloadLink.download = `barcode-${Date.now()}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+}
+
+// Event Listeners
+document.getElementById('qr-input').addEventListener('input', updateQR);
+document.getElementById('qr-color').addEventListener('input', updateQR);
+document.getElementById('qr-bg-color').addEventListener('input', updateQR);
+document.getElementById('qr-dots-style').addEventListener('change', updateQR);
+
+document.getElementById('barcode-input').addEventListener('input', generateBarcode);
+document.getElementById('barcode-type').addEventListener('change', generateBarcode);
+document.getElementById('barcode-color').addEventListener('input', generateBarcode);
+document.getElementById('barcode-width').addEventListener('input', generateBarcode);
+
+// Tab switching logic for QR
+document.querySelectorAll('#qr-types .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('#qr-types .tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const type = tab.dataset.type;
+        const input = document.getElementById('qr-input');
+        
+        if(type === 'url') input.placeholder = "https://example.com";
+        else if(type === 'wifi') input.placeholder = "WIFI:S:MySSID;P:password;;";
+        else input.placeholder = "Enter text here...";
+        
+        updateQR();
+    });
+});
