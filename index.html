@@ -1,107 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR & Barcode Generator | XpertZones</title>
-  <meta name="description" content="Generate QR Codes and Barcodes instantly. Fast, clean, and secure." />
-
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- QRCode Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <!-- Barcode Library -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XpertZones | Professional QR & Barcode Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="container header-inner">
-      <div class="logo">QR<span>Studio</span></div>
-      <nav>
-        <button id="homeBtn" class="nav-btn active">Home</button>
-        <button id="qrBtn" class="nav-btn">Create QR</button>
-        <button id="barcodeBtn" class="nav-btn">Create Barcode</button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- MAIN -->
-  <main class="container">
-
-    <!-- HOME -->
-    <section id="homeSection" class="card page active">
-      <h1>Generate QR Codes & Barcodes Instantly</h1>
-      <p class="subtitle">Fast. Secure. Professional.</p>
-
-      <div class="home-actions">
-        <button class="primary-btn" id="homeQR">Create QR Code</button>
-        <button class="secondary-btn" id="homeBarcode">Create Barcode</button>
-      </div>
-    </section>
-
-    <!-- QR SECTION -->
-    <section id="qrSection" class="card page">
-      <h2>Create QR Code</h2>
-
-      <div class="grid-2">
-        <div class="controls">
-          <label>Enter Data</label>
-          <input type="text" id="qrInput" placeholder="Enter text or URL..." />
-
-          <label>Size (px)</label>
-          <input type="number" id="qrSize" value="250" min="100" max="1000" />
-
-          <label>Color</label>
-          <input type="color" id="qrColor" value="#000000" />
-
-          <button id="downloadQR" class="primary-btn full-width">
-            Download QR
-          </button>
+    <header class="navbar">
+        <div class="container nav-content">
+            <button class="nav-link" onclick="showView('home')">Home</button>
+            <div class="logo-placeholder">Logo</div>
         </div>
+    </header>
 
-        <div class="preview">
-          <div id="qrPreview" class="preview-box"></div>
+    <main class="container">
+        <!-- HOME VIEW -->
+        <section id="view-home" class="view active">
+            <div class="hero-card">
+                <div class="button-group-main">
+                    <button class="btn btn-navy" onclick="showView('qr')">Create QR</button>
+                    <button class="btn btn-navy" onclick="showView('barcode')">Create Barcode</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- QR GENERATOR VIEW -->
+        <section id="view-qr" class="view">
+            <div class="generator-grid">
+                <!-- Left: Controls -->
+                <div class="card card-controls">
+                    <h2 class="section-title">Generate QR CODE</h2>
+                    
+                    <div class="control-group">
+                        <label class="cyan-label">SELECT CONTENT TYPE</label>
+                        <div class="tab-group" id="qr-content-types">
+                            <button class="tab active" data-type="text">TEXT</button>
+                            <button class="tab" data-type="url">URL</button>
+                            <button class="tab" data-type="wifi">WIFI</button>
+                            <button class="tab" data-type="vcard">vCard</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="cyan-label">INSERT YOUR DATA</label>
+                        <input type="text" id="qr-input" placeholder="Type or paste link here..." class="form-input">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="cyan-label">Size: <span id="size-val">300</span>px</label>
+                        <input type="range" id="qr-size" min="100" max="1000" value="300" class="range-input">
+                    </div>
+
+                    <!-- DESIGN & CUSTOMIZE SECTION (As per PDF) -->
+                    <div class="design-section">
+                        <label class="cyan-label">DESIGN & CUSTOMIZE</label>
+                        <div class="design-tabs">
+                            <button class="d-tab active" onclick="openDesignTab(event, 'tab-colors')">COLORS</button>
+                            <button class="d-tab" onclick="openDesignTab(event, 'tab-shapes')">SHAPES</button>
+                            <button class="d-tab" onclick="openDesignTab(event, 'tab-logo')">LOGO</button>
+                            <button class="d-tab" onclick="openDesignTab(event, 'tab-frame')">FRAME</button>
+                        </div>
+
+                        <div id="tab-colors" class="design-content active">
+                            <div class="color-row">
+                                <div class="color-field">
+                                    <span>QR Color</span>
+                                    <input type="color" id="qr-color" value="#111927">
+                                </div>
+                                <div class="color-field">
+                                    <span>Background</span>
+                                    <input type="color" id="qr-bg-color" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-shapes" class="design-content">
+                            <label class="sub-label">Border style</label>
+                            <div class="shape-grid" id="corner-styles">
+                                <div class="shape-opt active" data-value="square">■</div>
+                                <div class="shape-opt" data-value="dot">●</div>
+                                <div class="shape-opt" data-value="extra-rounded">Rounded</div>
+                            </div>
+                            <label class="sub-label" style="margin-top:10px">Center style</label>
+                            <div class="shape-grid" id="dot-styles">
+                                <div class="shape-opt active" data-value="square">■</div>
+                                <div class="shape-opt" data-value="dots">●</div>
+                                <div class="shape-opt" data-value="rounded">▢</div>
+                                <div class="shape-opt" data-value="classy">◈</div>
+                            </div>
+                        </div>
+
+                        <div id="tab-logo" class="design-content">
+                            <label class="sub-label">Select a logo</label>
+                            <div class="logo-grid">
+                                <button class="logo-opt active" data-logo="none">None</button>
+                                <button class="logo-opt" data-logo="whatsapp">WA</button>
+                                <button class="logo-opt" data-logo="wifi">WiFi</button>
+                            </div>
+                            <div class="upload-area">
+                                <input type="file" id="logo-upload" accept="image/*">
+                                <p>Drag and drop or click to upload</p>
+                            </div>
+                        </div>
+
+                        <div id="tab-frame" class="design-content">
+                            <div class="shape-grid">
+                                <div class="shape-opt active">None</div>
+                                <div class="shape-opt">Post</div>
+                                <div class="shape-opt">Scan Me</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Preview -->
+                <div class="card card-preview">
+                    <p class="preview-title">Live Preview</p>
+                    <div id="qr-result"></div>
+                    <div class="download-box">
+                        <button class="btn-dl-main" onclick="downloadQR('png')">DOWNLOAD PNG</button>
+                        <div class="btn-row">
+                            <button onclick="downloadQR('svg')">SVG</button>
+                            <button onclick="downloadQR('jpeg')">JPG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BARCODE VIEW -->
+        <section id="view-barcode" class="view">
+            <div class="generator-grid">
+                <div class="card card-controls">
+                    <h2 class="section-title">Generate Bar Code</h2>
+                    <div class="control-group">
+                        <label class="cyan-label">Input Data</label>
+                        <input type="text" id="barcode-input" value="Xpert12345" class="form-input">
+                    </div>
+                    <div class="control-group">
+                        <label class="cyan-label">Foreground Color</label>
+                        <input type="color" id="barcode-color" value="#111927" class="form-input-color">
+                    </div>
+                </div>
+                <div class="card card-preview">
+                    <p class="preview-title">Live Preview</p>
+                    <div class="barcode-container">
+                        <svg id="barcode-canvas"></svg>
+                    </div>
+                    <button class="btn-dl-main" onclick="downloadBarcode()">DOWNLOAD PNG</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            Powered By: <a href="https://www.xpertzones.com/" target="_blank">xpertzones</a>
         </div>
-      </div>
-    </section>
+    </footer>
 
-    <!-- BARCODE SECTION -->
-    <section id="barcodeSection" class="card page">
-      <h2>Create Barcode</h2>
-
-      <div class="grid-2">
-        <div class="controls">
-          <label>Enter Data</label>
-          <input type="text" id="barcodeInput" placeholder="Enter barcode value..." />
-
-          <button id="downloadBarcode" class="primary-btn full-width">
-            Download Barcode
-          </button>
-        </div>
-
-        <div class="preview">
-          <svg id="barcodePreview"></svg>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container">
-      <p>
-        QR & Barcode Service is a sub-brand of 
-        <a href="https://www.xpertzones.com/" target="_blank">
-          XpertZones
-        </a>
-      </p>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
